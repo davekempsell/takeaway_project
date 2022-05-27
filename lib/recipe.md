@@ -23,45 +23,46 @@ I would like to receive a text such as "Thank you! Your order was placed and wil
 * see an itemised receipt, with total
 * receive a confirmation text, with ETA
 
-┌───────────────────┐      ┌─────────────────────────┐
-│ Menu              │      │  Dish                   │
-│ ----              │      │  ----                   │
-│                   ◄──────┤  returns name as string │
-│ add dish w/ price │      │  returns price as £GBP  │
-│ view entire menu  │      └─────────────────────────┘
-│                   │
-│                   │
-└──────┬────────────┘
-       │
-       │OrderSystem
-       │shows customer
-       │menu on request
-       │
-       │                                    ┌─────────────┐
-     ┌─▼────────────────────────┐           │             │
-     │                          │Text called│ Text        │
-     │ Order System             │through    │ ----        │
-     │ ------------             │OrderSystem│             │
-     │                          ◄───────────┤ use Twilio  │
-     │ view list of dishes      │           │ include ETA │
-     │ select dishes            │           │             │
-     │ produce itemised receipt │           └─────────────┘
-     │ send text                │
-     │                          │
-     └─────▲────────────────────┘
-           │
-           │OrderSystem uses SelectDishes
-           │class to take input from terminal
-           │
-       ┌───┴──────────────────┐
-       │                      │
-       │ SelectDishes         │
-       │ ------------         │
-       │                      │
-       │ run method to create │
-       │ interactive ordering │
-       │ through the terminal │
-       └──────────────────────┘
+                                  ┌─────────────────┐
+       ┌───────────────────┐      │  Dish           │
+       │ Menu              │      │  ----           │
+       │ ----              │      │  name as string │
+       │                   ◄──────┤  price as £GBP  │
+┌──────┤ add dish w/ price │      └─────────────────┘
+│      │ view entire menu  │
+│      │                   │          ┌─────────────┐
+│      │                   │          │ Text        │
+│      └──────┬────────────┘          │ ----        │
+│             │                       │             │
+│             │OrderSystem            │ use Twilio  │
+│             │shows customer         │ include ETA │
+│             │menu on request        └────────────┬┘
+│             │                                    │
+│             │                                    │
+│           ┌─▼────────────────────────┐           │
+│           │                          │Text called│
+│           │ Order System             │through    │
+│           │ ------------             │OrderSystem│
+│           │                          ◄───────────┘
+│           │ view list of dishes      │
+│           │ select dishes            │
+│           │ produce itemised receipt │
+│           │ send text                │
+│           │                          │
+│           └─────▲────────────────────┘
+│                 │
+│                 │OrderSystem uses SelectDishes
+│                 │class to take input from terminal
+│SelectDishes     │
+│uses Menu in ┌───┴──────────────────┐
+│getting user │                      │
+│input        │ SelectDishes         │
+│             │ ------------         │
+│             │                      │
+└─────────────► run method to create │
+              │ interactive ordering │
+              │ through the terminal │
+              └──────────────────────┘
 
 - Also design the interface of each class in more detail.
 
@@ -105,6 +106,7 @@ class SelectDishes
   def initialize(io) 
     @io = io
     #sets io variable to Kernal by default
+    #creates a list of the numbers of selected dishes
   end
   
   def run
@@ -174,7 +176,8 @@ get_food.select_dishes # =>
   "2"
   "You have added a Coffee, enter another dish, or press enter for receipt"
   "3"
-  "You have added a Biscuit, enter another dish, or press enter for receipt"
+  "You have added a Biscuit." 
+  "Enter another dish, or press enter for receipt"
   <enter>
   "Your order:
   Coffee - £2.50
@@ -218,18 +221,6 @@ my_menu = Menu.new
 my_menu.add_dish("Coffee", 2.50)
 my_menu.add_dish("Ham Sandwich", 4.95)
 my_menu.view_dishes # => ["Coffee": 2.50, "Ham Sandwich": 4.95]
-
-# returns name as string
-my_menu = Menu.new
-my_menu.add_dish("Coffee", 2.50)
-my_menu.name(0) # => "Coffee"
-my_menu.price(1) # => "
-
-# returns price as formatted string
-my_menu = Menu.new
-my_menu.add_dish("Coffee", 2.50)
-my_menu.add_dish("Ham Sandwich", 4.95)
-my_menu.price(1) # => "£4.95"
 
 # fails if view_dishes called on empty menu
 my_menu = Menu.new
